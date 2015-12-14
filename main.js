@@ -35,15 +35,18 @@ module.exports.find = function find(options, callback) {
         if (!result || !result.similartracks || !result.similartracks.track || result.similartracks.track.length === 0) {
           callback(null, []);
         } else {
-          console.log(result.similartracks.track[49]);
           async.map(result.similartracks.track, findYoutubeURLForTrack, function(err, results) {
             if (err) {
               callback(err, null);
             } else {
-              console.log(results[49]);
-              async.map(results, findTrackAlbumForTrack, function(err, results) {
-                console.log(results[49]);
-                callback(null, results);
+              // filter out any null values (songs we couldn't find youtube videos for)
+              async.filter(results, function(item, cb) {
+                cb(item == null);
+              }, function(results) {
+                // finally add the album + other itunes info to track
+                async.map(results, findTrackAlbumForTrack, function(err, results) {
+                  callback(null, results);
+                });
               });
             }
           });
@@ -59,7 +62,7 @@ module.exports.find = function find(options, callback) {
 
 function findYoutubeURLForTrack(trackObj, callback) {
   youtube.search(trackObj.name + ' ' + trackObj.artist.name, 1, function(error, result) {
-    if (error) {
+    if (error || result.items.length === 0) {
       callback(error, null);
     } else {
       var firstRes = result.items[0];
