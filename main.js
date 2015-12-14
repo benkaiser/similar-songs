@@ -41,7 +41,7 @@ module.exports.find = function find(options, callback) {
             } else {
               // filter out any null values (songs we couldn't find youtube videos for)
               async.filter(results, function(item, cb) {
-                cb(item == null);
+                cb(item != null);
               }, function(results) {
                 // finally add the album + other itunes info to track
                 async.map(results, findTrackAlbumForTrack, function(err, results) {

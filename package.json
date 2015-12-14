@@ -1,6 +1,6 @@
 {
   "name": "similar-songs",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Finding youtube video for a title and artist",
   "main": "app.js",
   "dependencies": {
